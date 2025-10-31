@@ -1,0 +1,12 @@
+AI ADS REVOLUTION – ISTRUZIONI (CODICE REALE, DB VUOTO)
+
+1) Copia `.env.example` in `.env` e imposta:
+   - JWT_SECRET = una stringa lunga e segreta
+   - BASE_URL = http://localhost:4000 (in locale) oppure il dominio su Render
+   - DB_FILE = ./data.db (default)
+2) Installa e avvia:
+   npm install
+   npm run dev
+3) Apri http://localhost:4000/dashboard
+4) Crea il tuo primo account con "Registrati", poi crea campagne, carica asset, ecc.
+5) Per metterla online su Render: usa il file `render.yaml` (Blueprint) e imposta le env da dashboard Render.

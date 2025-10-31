@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: ai-ads-revolution
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: BASE_URL
+        fromService:
+          type: web
+          name: ai-ads-revolution
+          property: url
+      - key: DB_FILE
+        value: /data/data.db
+      - key: CURRENCY
+        value: eur
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false
+    disk:
+      name: adsdb
+      mountPath: /data
+      sizeGB: 1
+    healthCheckPath: /health
