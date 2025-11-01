@@ -1,4 +1,4 @@
 #!/usr/bin/env bash
-echo "🧠 Ricompilo sqlite3 per Render..."
-npm rebuild sqlite3 --build-from-source
+echo "🧠 Ricompilo sqlite3 nativo per Render Linux..."
+npm install sqlite3 --build-from-source
 
