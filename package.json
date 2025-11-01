@@ -1,11 +1,12 @@
 {
   "name": "ai-ads-revolution",
   "version": "1.4.0",
-  "description": "AI-like community ads platform \u2013 backend Node + SQLite, client web, publisher widget, Stripe (optional)",
+  "description": "AI-like community ads platform – backend Node + SQLite, client web, publisher widget, Stripe (optional)",
   "main": "server.js",
   "scripts": {
     "dev": "node server.js",
-    "start": "NODE_ENV=production node server.js"
+    "start": "NODE_ENV=production node server.js",
+    "render-build": "./.render-build.sh"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
