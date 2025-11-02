@@ -1,1 +1,28 @@
-[incolla qui il contenuto YAML di sopra]
+services:
+  - type: web
+    name: ai-ads-revolution
+    env: node
+    plan: starter
+    region: oregon
+    branch: main
+    buildCommand: npm install
+    startCommand: node server.js
+    autoDeploy: true
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: 22.16.0
+      - key: PORT
+        value: 4000
+      - key: CURRENCY
+        value: eur
+      - key: JWT_SECRET
+        value: superchiave_casuale123456789
+      - key: DB_FILE
+        value: /data/data.db
+      - key: BASE_URL
+        value: ""
+    disks:
+      - name: data
+        mountPath: /data
+        sizeGB: 1
