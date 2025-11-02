@@ -1,37 +1,15 @@
 services:
   - type: web
-    name: ai-ads-revolution-api
+    name: ai-ads-revolution
     env: node
-    plan: pro
     region: frankfurt
-    branch: main
-    buildCommand: "npm ci || npm install"
-    startCommand: "node server/index.js"
-    autoDeploy: true
-    healthCheckPath: "/api/metrics"
+    plan: free
+    buildCommand: npm ci && npm run build
+    startCommand: npm run start
     envVars:
       - key: NODE_VERSION
-        value: 20
+        value: 18.19.0
       - key: PORT
-        value: 8080
-      - key: DB_FILE
-        value: /data/data.db
-      - key: JWT_SECRET
-        value: CHANGEME_reallyRandom_64chars_goes_here
-      - key: CURRENCY
-        value: eur
-      - key: BASE_URL
-        value: https://api.aiadsrevolution.com
-    disks:
-      - name: data
-        mountPath: /data
-        sizeGB: 1
-
-staticSites:
-  - name: ai-ads-revolution-static
-    branch: main
-    buildCommand: "echo 'no build'"
-    staticPublishPath: "public"
-    plan: free
+        value: 10000
+    healthCheckPath: /health
     autoDeploy: true
-
