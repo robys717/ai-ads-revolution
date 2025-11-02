@@ -1,5 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import AAR_Landing from "./App";
+import { RouterProvider } from "react-router-dom";
+import { router } from "./router";
+
 const root = document.getElementById("root")!;
-ReactDOM.createRoot(root).render(<AAR_Landing />);
+ReactDOM.createRoot(root).ReactDOM.createRovider router={router} />);
