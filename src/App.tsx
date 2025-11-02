@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Rocket, BarChart3, Cpu, ShieldCheck, LineChart, ExternalLink } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "./components/ui/button";
+import { Card, CardContent } from "./components/ui/card";
 
 // Se il tuo progetto NON supporta l'alias "@/..." per import,
 // sostituisci gli import sopra con:
