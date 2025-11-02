@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Rocket, BarChart3, Cpu, ShieldCheck, LineChart } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "./components/ui/button";
+import { Card, CardContent } from "./components/ui/card";
 
 export default function AAR_Landing() {
   const [kpi, setKpi] = useState<any>({ impressions: 0, clicks: 0, conversions: 0, spend_cents: 0 });

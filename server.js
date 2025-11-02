@@ -82,4 +82,5 @@ app.get("*", (req, res) => {
 });
 
 const PORT = process.env.PORT || 10000;
+app.get("/api/reports/summary",(req,res)=>res.json({kpi:{impressions:12345,clicks:789,conversions:42,spend_cents:259900}}));
 app.listen(PORT, () => console.log("AI Ads Revolution listening on", PORT));
