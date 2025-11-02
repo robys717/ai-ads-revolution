@@ -7,7 +7,10 @@
     "build:web": "npm --prefix web install && npm --prefix web run build",
     "start": "node server.js",
     "dev": "vite",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "dev:api": "nodemon --quiet server.js",
+    "dev:web": "vite",
+    "dev:all": "concurrently -k -n API,WEB \"npm:dev:api\" \"npm:dev:web\""
   },
   "dependencies": {
     "express": "^4.19.2",
@@ -26,6 +29,9 @@
     "@types/react": "^19.2.2",
     "@types/react-dom": "^19.2.2",
     "@types/react-router-dom": "^5.3.3",
+    "@vitejs/plugin-react": "^5.1.0",
+    "concurrently": "^9.2.1",
+    "nodemon": "^3.1.10",
     "vite": "^7.1.12"
   }
 }
