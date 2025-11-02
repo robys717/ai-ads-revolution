@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "build": "echo \"(MVP) niente build necessaria\"",
+    "build": "npm run build:web",
+    "build:web": "npm --prefix web install && npm --prefix web run build",
     "start": "node server.js"
   },
   "dependencies": {
     "express": "^4.19.2",
-    "multer": "^1.4.5"
+    "multer": "1.4.5-lts.1"
   },
   "engines": { "node": ">=18.19.0" }
 }
