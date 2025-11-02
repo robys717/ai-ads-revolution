@@ -1,3 +1,4 @@
+// server.js
 import express from "express";
 import path from "path";
 import fs from "fs";
@@ -6,22 +7,24 @@ import multer from "multer";
 const app = express();
 app.use(express.json());
 
-// static root: web/dist se esiste, altrimenti public
+// --- Static root: preferisci la build Vite (web/dist) ---
 const __dirname = path.resolve();
-const distWeb = path.join(__dirname, "web", "dist");
+const distWeb   = path.join(__dirname, "web", "dist");
 const publicDir = path.join(__dirname, "public");
 const staticRoot = fs.existsSync(distWeb) ? distWeb : (fs.existsSync(publicDir) ? publicDir : __dirname);
 app.use(express.static(staticRoot));
 
-// health
+// --- Health ---
 app.get("/health", (_, res) => res.json({ ok: true }));
 
-// demo in-memory
+// --- Demo in-memory ---
 let interactions = [
   { id: 1, date: new Date().toISOString(), channel: "Google", ctr: 2.1, cpc: 0.34, spend: 12.4 },
   { id: 2, date: new Date().toISOString(), channel: "Meta",   ctr: 1.8, cpc: 0.28, spend: 8.9  }
 ];
+
 app.get("/interactions", (_, res) => res.json({ items: interactions, total: interactions.length }));
+
 app.post("/interactions", (req, res) => {
   const { channel, ctr, cpc, spend } = req.body || {};
   const item = {
@@ -36,7 +39,7 @@ app.post("/interactions", (req, res) => {
   res.status(201).json(item);
 });
 
-// upload (disco effimero)
+// --- Upload (storage effimero) ---
 const upload = multer({ dest: "/tmp" });
 app.get("/assets/upload", (_, res) => {
   res.type("html").send(`<!doctype html>
@@ -55,7 +58,7 @@ app.post("/assets/upload", upload.single("file"), (req, res) => {
   res.json({ ok:true, filename:req.file.originalname, storedAt:req.file.path });
 });
 
-// widget pubblico
+// --- Widget pubblico ---
 app.get("/public/widget.js", (_, res) => {
   res.type("application/javascript").send(`
 (async function(){
@@ -69,11 +72,13 @@ app.get("/public/widget.js", (_, res) => {
 })();`);
 });
 
-// SPA fallback (se più tardi aggiungi la SPA)
-app.get(["/","/dashboard"], (req, res, next) => {
-  const indexFile = path.join(staticRoot, "index.html");
-  if (fs.existsSync(indexFile)) return res.sendFile(indexFile);
-  next();
+// --- SPA fallback (React Router): qualsiasi GET non-API torna index.html ---
+app.get("*", (req, res) => {
+  // Evita di intercettare asset o API già serviti
+  if (req.path.startsWith("/health") || req.path.startsWith("/interactions") || req.path.startsWith("/assets") || req.path.startsWith("/public")) {
+    return res.status(404).end();
+  }
+  res.sendFile(path.join(staticRoot, "index.html"));
 });
 
 const PORT = process.env.PORT || 10000;
