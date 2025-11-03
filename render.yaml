@@ -5,10 +5,10 @@ services:
     region: frankfurt
     plan: free
     buildCommand: npm install && npm run build
-    startCommand: npm run start
+    startCommand: npm start
     envVars:
       - key: NODE_VERSION
-        value: 18.19.0
+        value: 20.17.1
       - key: PORT
         value: 10000
     healthCheckPath: /health
