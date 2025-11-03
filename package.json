@@ -3,17 +3,18 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
-    "build": "npm run build:web",
+    "build": "vite build",
     "build:web": "npm --prefix web install && npm --prefix web run build",
     "start": "node server.js",
     "dev": "vite",
     "preview": "vite preview",
-    "dev:api": "nodemon --quiet server.js",
+    "dev:api": "nodemon --quiet server.cjs",
     "dev:web": "vite",
-    "dev:all": "concurrently -k -n API,WEB \"npm:dev:api\" \"npm:dev:web\""
+    "dev:all": "concurrently -k -n API,WEB \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:web-only": "vite"
   },
   "dependencies": {
-    "express": "^4.19.2",
+    "express": "^4.21.2",
     "framer-motion": "^12.23.24",
     "lucide-react": "^0.552.0",
     "multer": "1.4.5-lts.1",
@@ -32,6 +33,7 @@
     "@vitejs/plugin-react": "^5.1.0",
     "concurrently": "^9.2.1",
     "nodemon": "^3.1.10",
+    "typescript": "^5.9.3",
     "vite": "^7.1.12"
   }
 }

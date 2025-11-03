@@ -1,0 +1,6 @@
+{"event":"pageview","ts":1762126409325,"ip":"::1"}
+{"event":"click","meta":"cta-hero","ts":1762126409349,"ip":"::1"}
+{"event":"conversion","orderId":"TEST-123","value":99.9,"ts":1762126409369,"ip":"::1"}
+{"event":"pageview","url":"http://test.local/","ts":1762126612599,"ip":"::1"}
+{"event":"click","meta":"cta-hero","ts":1762126612616,"ip":"::1"}
+{"event":"conversion","orderId":"TEST-123","value":99.9,"ts":1762126612638,"ip":"::1"}
