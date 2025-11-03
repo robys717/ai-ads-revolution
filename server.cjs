@@ -40,7 +40,8 @@ function aggregate(events){
 // Health (per Render)
 const BUILD="2025-11-03-1";
 const COMMIT=(process.env.RENDER_GIT_COMMIT||"local");
-app.get("/health",(req,res)=>res.json({ ok:true, service:"AI Ads Revolution", build:BUILD, time:new Date().toISOString() }));
+const BUILD="cloud-`date +%Y%m%d-%H%M`";
+app.get("/health",(req,res)=>res.json({ ok:true, build:BUILD }));
 app.get("/api/health",(req,res)=>res.json({ ok:true, service:"AI Ads Revolution", time:new Date().toISOString() }));
 
 // Pixel
