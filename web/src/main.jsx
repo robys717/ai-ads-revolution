@@ -1,3 +1,5 @@
+import './lib/fetch-patch'
+import { API_BASE } from './lib/api'
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
