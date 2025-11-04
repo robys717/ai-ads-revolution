@@ -11,7 +11,8 @@
     "dev:api": "nodemon --quiet server.cjs",
     "dev:web": "vite",
     "dev:all": "concurrently -k -n API,WEB \"npm:dev:api\" \"npm:dev:web\"",
-    "dev:web-only": "vite"
+    "dev:web-only": "vite",
+    "db:init": "node -r dotenv/config scripts/init_db.js"
   },
   "dependencies": {
     "better-sqlite3": "^12.4.1",
@@ -20,6 +21,7 @@
     "framer-motion": "^12.23.24",
     "lucide-react": "^0.552.0",
     "multer": "1.4.5-lts.1",
+    "pg": "^8.16.3",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.9.5",
