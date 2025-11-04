@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: ai-ads-api
+    name: ai-ads
     env: node
     plan: free
     region: frankfurt
@@ -10,20 +10,16 @@ services:
       - key: PORT
         value: 10000
     buildCommand: |
-      npm ci
-    startCommand: |
-      node server.cjs
+      npm ci || npm install
+      if [ -d web ]; then
+        cd web && npm ci || true
+        npm run build || true
+        cd ..
+      else
+        npm run build || true
+      fi
+    startCommand: node server.cjs
     disks:
       - name: data
         mountPath: /opt/render/project/src
         sizeGB: 1
-
-  - type: static
-    name: ai-ads-web
-    plan: free
-    region: frankfurt
-    buildCommand: |
-      cd web
-      npm ci
-      npm run build
-    publishPath: web/dist
