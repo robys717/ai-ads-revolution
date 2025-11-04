@@ -35,7 +35,36 @@ async function getFreePort(start = 3000) {
   
   
   
-  app.get('/api/reports/summary', async (_req, res) => {
+  
+app.get('/api/reports/timeseries', async (_req,res)=>{
+  try{
+    if(!pgPool){
+      // fallback demo 7 giorni
+      const today=new Date();
+      const data=[...Array(7)].map((_,i)=>{
+        const d=new Date(today); d.setDate(d.getDate()-(6-i));
+        return { day:d.toISOString().slice(0,10), spend:+(50+Math.random()*100).toFixed(2), clicks:200+Math.floor(Math.random()*500), conversions:5+Math.floor(Math.random()*25) };
+      });
+      return res.json({ ok:true, source:'memory', data });
+    }
+    const q=await pgPool.query(`
+      SELECT
+        to_char(day,'YYYY-MM-DD') AS day,
+        SUM(spend)::float AS spend,
+        SUM(clicks)::int AS clicks,
+        SUM(conversions)::int AS conversions
+      FROM campaigns
+      GROUP BY day
+      ORDER BY day ASC;
+    `);
+    res.json({ ok:true, source:'postgres', data:q.rows });
+  }catch(e){
+    console.error('timeseries error', e);
+    res.status(500).json({ ok:false, error:String(e) });
+  }
+});
+
+app.get('/api/reports/summary', async (_req, res) => {
     try {
       if (!pgPool) {
         return res.json({ ok:true, source:'memory', date:new Date().toISOString(),
