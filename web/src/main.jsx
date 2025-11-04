@@ -1,19 +1,9 @@
-import './lib/fetch-patch'
-import { API_BASE } from './lib/api'
-import React from "react";
-import ReactDOM from "react-dom/client";
-import "./index.css";
-import App from "./App.jsx";
-import Dashboard from "./pages/Dashboard.jsx";
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import React from 'react'
+import ReactDOM from 'react-dom/client'
+import TestDashboard from './pages/TestDashboard'
 
-const router = createBrowserRouter([
-  { path: "/", element: <App /> },
-  { path: "/dashboard", element: <Dashboard /> },
-]);
-
-ReactDOM.createRoot(document.getElementById("root")).render(
+ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <TestDashboard />
   </React.StrictMode>
-);
+)
