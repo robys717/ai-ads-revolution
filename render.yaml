@@ -6,14 +6,13 @@ services:
     region: frankfurt
     envVars:
       - key: NODE_VERSION
-        value: 18.20.3
-      # Render imposta la PORT automaticamente; tenerla qui non fa danni
+        value: 22.12.0
       - key: PORT
         value: 10000
     buildCommand: |
-      npm ci || npm install
+      npm install
       if [ -d web ]; then
-        cd web && npm ci || true
+        cd web && npm install || true
         npm run build || true
         cd ..
       else
