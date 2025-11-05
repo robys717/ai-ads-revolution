@@ -13,7 +13,7 @@
     "dev:all": "concurrently -k -n API,WEB \"npm:dev:api\" \"npm:dev:web\"",
     "dev:web-only": "vite",
     "db:init": "node -r dotenv/config scripts/init_db.js",
-    "db:migrate": "node scripts/migrate.js"
+    "db:migrate": "node scripts/migrate.cjs"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",
