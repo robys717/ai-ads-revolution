@@ -1,25 +1,29 @@
 export default function Home(){
   return (
-    <div className="container space-y-6">
-      <section className="card">
-        <h1 className="text-2xl font-bold">AI Ads Revolution</h1>
-        <p className="text-slate-300 mt-2">La piattaforma ADS con Intelligenza: crea, ottimizza e misura KPI reali.</p>
-        <ul className="mt-4 list-disc list-inside text-slate-300">
-          <li>Dashboard KPI (spesa, clic, conversioni, CTR)</li>
-          <li>Grafici trend giornalieri</li>
-          <li>API pronte per integrazione con Google Ads / Meta</li>
-        </ul>
-      </section>
-      <section className="grid sm:grid-cols-2 gap-4">
-        <div className="card">
-          <h2 className="font-semibold mb-2">Pronto all’uso</h2>
-          <p className="text-slate-300">Deploy su Render, HTTPS, cold start gestito.</p>
-        </div>
-        <div className="card">
-          <h2 className="font-semibold mb-2">Scalabile</h2>
-          <p className="text-slate-300">Backend Express, Postgres opzionale, rate-limit e helmet.</p>
+    <main className="max-w-6xl mx-auto p-6">
+      <section className="text-center py-20">
+        <h1 className="text-5xl md:text-6xl font-semibold tracking-tight">AI Ads Revolution</h1>
+        <p className="mt-4 text-slate-300 text-lg md:text-xl">
+          La piattaforma pubblicitaria con Intelligenza Reale: misura, ottimizza e scala le tue campagne.
+        </p>
+        <div className="mt-8 flex gap-3 justify-center">
+          <a href="/dashboard" className="px-5 py-3 rounded-xl bg-white text-black font-medium hover:opacity-90">Guarda la Dashboard</a>
+          <a href="/pricing" className="px-5 py-3 rounded-xl border border-slate-600 hover:bg-slate-800">Piani & Prezzi</a>
         </div>
       </section>
-    </div>
+
+      <section className="grid md:grid-cols-3 gap-4 mt-8">
+        {[
+          {t:"KPI in tempo reale", d:"Spesa, Click, Conversioni, CTR – pronti via API."},
+          {t:"Scalabile & Sicuro", d:"Express, rate-limit, helmet, Postgres."},
+          {t:"Pronto al deploy", d:"Render + dominio custom con HTTPS."},
+        ].map((c,i)=>(
+          <div key={i} className="rounded-2xl bg-slate-900/60 border border-slate-800 p-5 shadow-md">
+            <h3 className="font-semibold">{c.t}</h3>
+            <p className="text-slate-300 mt-1">{c.d}</p>
+          </div>
+        ))}
+      </section>
+    </main>
   );
 }

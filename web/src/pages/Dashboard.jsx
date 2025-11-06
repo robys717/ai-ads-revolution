@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 function Kpi({label, value}) {
-  return <div className="card"><div className="text-3xl font-semibold">{value}</div><div className="text-sm text-slate-400">{label}</div></div>;
+  return <div className="rounded-2xl bg-slate-900/60 border border-slate-800 p-4 shadow-md"><div className="text-3xl font-semibold">{value}</div><div className="text-sm text-slate-400">{label}</div></div>;
 }
 
 export default function Dashboard(){

@@ -2,7 +2,7 @@ import { LineChart, Line, Tooltip, ResponsiveContainer, XAxis, YAxis } from 'rec
 
 export default function LineMiniChart({data, dataKey="spend"}) {
   return (
-    <div className="card" style={{height:220}}>
+    <div className="rounded-2xl bg-slate-900/60 border border-slate-800 p-4 shadow-md" style={{height:220}}>
       <div className="mb-2 text-sm text-slate-400">Trend</div>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data}>
