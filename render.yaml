@@ -7,18 +7,19 @@ services:
     buildCommand: |
       cd ../web && npm ci && npm run build
       cd ../backend && npm ci
-    startCommand: node server.cjs
+    # Se il tuo file è backend/server.js, lascia così:
+    startCommand: node server.js
     healthCheckPath: /api/health
     envVars:
-      - key: AI_URL
+      # Base URL del microservizio AI (Render risolve l'URL pubblico)
+      - key: AI_BASE_URL
         fromService:
           name: ai-ads-advisor
           type: web
           property: url
-          # Render setterà AI_URL=<URL_AI_AI>/  (noi vogliamo /advise)
-      - key: AI_URL
-        value: https://ai-ads-advisor.onrender.com/advise
-        # NB: questa value è un fallback se fromService non è supportato nel tuo piano
+      # (Opzionale) fallback manuale se il piano non supporta fromService
+      - key: AI_BASE_URL_FALLBACK
+        value: https://ai-ads-advisor.onrender.com
 
   - type: web
     name: ai-ads-advisor
