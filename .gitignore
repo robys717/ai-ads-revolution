@@ -1,6 +1,21 @@
+# Node / Vite
 node_modules/
-uploads/
-data.db
-package-lock.json
-.DS_Store
+web/dist/
+*.log
+
+# Python
+__pycache__/
+*.pyc
+
+# Env & creds
 .env
+*.env
+backend/.env
+backend/.env.*
+
+# Local data
+data/*
+!.gitkeep
+
+# macOS
+.DS_Store

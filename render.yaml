@@ -1,22 +1,30 @@
 services:
   - type: web
-    name: ai-ads
+    name: ai-ads-revolution
     env: node
+    rootDir: backend
     plan: free
-    region: frankfurt
-    envVars:
-      - key: NODE_VERSION
-        value: 22.12.0
-      - key: NODE_ENV
-        value: production
     buildCommand: |
-      npm ci --no-audit --no-fund
-      if [ -d web ]; then
-        cd web
-        npm install --no-audit --no-fund
-        npm run build
-        cd ..
-      else
-        npm run build
-      fi
+      cd ../web && npm ci && npm run build
+      cd ../backend && npm ci
     startCommand: node server.cjs
+    healthCheckPath: /api/health
+    envVars:
+      - key: AI_URL
+        fromService:
+          name: ai-ads-advisor
+          type: web
+          property: url
+          # Render setterà AI_URL=<URL_AI_AI>/  (noi vogliamo /advise)
+      - key: AI_URL
+        value: https://ai-ads-advisor.onrender.com/advise
+        # NB: questa value è un fallback se fromService non è supportato nel tuo piano
+
+  - type: web
+    name: ai-ads-advisor
+    env: python
+    rootDir: ai
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn ai_service:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
