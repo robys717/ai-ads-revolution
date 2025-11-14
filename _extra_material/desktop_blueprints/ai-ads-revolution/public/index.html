@@ -1,0 +1,206 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Ads Revolution – MVP</title>
+  <style>
+    body{font-family:system-ui, Arial, sans-serif; margin:20px;}
+    .card{border:1px solid #ddd;border-radius:12px;padding:16px;margin-bottom:16px}
+    input,textarea{width:100%;padding:8px;margin:6px 0;border:1px solid #ccc;border-radius:8px}
+    button{padding:10px 14px;border:0;border-radius:10px;background:#0b5ed7;color:#fff;cursor:pointer}
+    .row{display:flex;gap:16px;flex-wrap:wrap}
+    .col{flex:1;min-width:280px}
+    small{color:#555}
+    img{max-width:100%;border-radius:10px}
+    a{color:#0b5ed7}
+    code{background:#f5f5f5;padding:2px 6px;border-radius:6px}
+  </style>
+</head>
+<body>
+  <h1>AI Ads Revolution – MVP</h1>
+  <p><small>Backend: <code>/health</code> → <code>{ ok: true }</code> • Vai alla <a href="/dashboard">Dashboard</a></small></p>
+
+  <div class="row">
+    <div class="col card">
+      <h2>1) Register / Login</h2>
+      <input id="name" placeholder="Name" />
+      <input id="email" placeholder="Email" />
+      <input id="password" type="password" placeholder="Password" />
+      <button onclick="register()">Register</button>
+      <button onclick="login()">Login</button>
+      <p><small>Token: <span id="token"></span></small></p>
+      <div class="card">
+        <h3>Wallet</h3>
+        <p>Saldo: € <span id="balance">0.00</span></p>
+        <input id="topup" type="number" step="1" placeholder="Ricarica € (Stripe)" />
+        <button onclick="createCheckout()">Checkout</button>
+      </div>
+    </div>
+
+    <div class="col card">
+      <h2>2) Create Campaign</h2>
+      <input id="title" placeholder="Title" />
+      <textarea id="desc" placeholder="Description (puoi includere info promozione)"></textarea>
+      <input id="dest" placeholder="Destination URL (https://...)">
+      <input id="budget" type="number" step="0.01" placeholder="Budget € (e.g., 20)" />
+      <input id="cpc" type="number" step="0.01" placeholder="CPC € (e.g., 0.10)" />
+      <input id="cpv" type="number" step="0.0001" placeholder="CPV € (e.g., 0.0005)" />
+      <input id="loc" placeholder="Locations (comma)" />
+      <input id="ints" placeholder="Interests (comma)" />
+      <button onclick="createCampaign()">Create</button>
+      <p id="campResult"></p>
+      <div>
+        <h3>Upload Asset</h3>
+        <input id="assetCampaignId" placeholder="Campaign ID" />
+        <input id="assetFile" type="file" />
+        <button onclick="uploadAsset()">Upload</button>
+        <p id="assetResult"></p>
+      </div>
+      <div class="card">
+        <h3>Fondi dalla Wallet → Campagna</h3>
+        <input id="fundCid" placeholder="Campaign ID" />
+        <input id="fundAmount" type="number" step="0.01" placeholder="€ (es. 10)" />
+        <button onclick="fundCampaign()">Trasferisci</button>
+        <p id="fundResult"></p>
+      </div>
+      <div class="card">
+        <h3>Publisher: genera embed</h3>
+        <input id="pubName" placeholder="Nome sito (es. Blog Roberto)" />
+        <input id="pubUrl" placeholder="URL sito (https://...)" />
+        <button onclick="createPublisher()">Crea Publisher</button>
+        <p id="pubEmbed"></p>
+      </div>
+    </div>
+
+    <div class="col card">
+      <h2>3) Feed (Public)</h2>
+      <input id="feedLoc" placeholder="Location (e.g., Milano)" />
+      <input id="feedInts" placeholder="Interests (e.g., pizza,fitness)" />
+      <button onclick="loadFeed()">Load Feed</button>
+      <div id="feed"></div>
+    </div>
+  </div>
+
+  <script>
+    const BASE = '';
+    let TOKEN = localStorage.getItem('token') || '';
+    document.getElementById('token').textContent = TOKEN ? TOKEN.slice(0, 20) + '...' : '';
+
+    async function meBalance(){
+      if(!TOKEN) return;
+      const r = await fetch(BASE + '/wallet', { headers: { 'Authorization':'Bearer '+TOKEN }});
+      const j = await r.json();
+      document.getElementById('balance').textContent = ((j.balance_cents||0)/100).toFixed(2);
+    }
+
+    async function register(){
+      const body = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value
+      };
+      const r = await fetch(BASE + '/auth/register', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
+      const j = await r.json();
+      if (j.token){ TOKEN = j.token; localStorage.setItem('token', TOKEN); document.getElementById('token').textContent = TOKEN.slice(0,20)+'...'; meBalance(); }
+      else alert(JSON.stringify(j));
+    }
+
+    async function login(){
+      const body = {
+        email: document.getElementById('email').value,
+        password: document.getElementById('password').value
+      };
+      const r = await fetch(BASE + '/auth/login', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body)});
+      const j = await r.json();
+      if (j.token){ TOKEN = j.token; localStorage.setItem('token', TOKEN); document.getElementById('token').textContent = TOKEN.slice(0,20)+'...'; meBalance(); }
+      else alert(JSON.stringify(j));
+    }
+
+    async function createCampaign(){
+      const body = {
+        title: document.getElementById('title').value,
+        description: document.getElementById('desc').value,
+        destination_url: document.getElementById('dest').value,
+        budget_eur: parseFloat(document.getElementById('budget').value || '0'),
+        cpc_eur: parseFloat(document.getElementById('cpc').value || '0.10'),
+        cpv_eur: parseFloat(document.getElementById('cpv').value || '0.0005'),
+        location: document.getElementById('loc').value,
+        interests: document.getElementById('ints').value
+      };
+      const r = await fetch(BASE + '/campaigns', {method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+TOKEN}, body: JSON.stringify(body)});
+      const j = await r.json();
+      document.getElementById('campResult').textContent = JSON.stringify(j);
+      document.getElementById('assetCampaignId').value = j.id || '';
+    }
+
+    async function uploadAsset(){
+      const cid = document.getElementById('assetCampaignId').value;
+      const f = document.getElementById('assetFile').files[0];
+      const fd = new FormData();
+      fd.append('campaign_id', cid);
+      fd.append('file', f);
+      const r = await fetch(BASE + '/assets/upload', { method:'POST', headers:{'Authorization':'Bearer '+TOKEN}, body: fd });
+      const j = await r.json();
+      document.getElementById('assetResult').textContent = JSON.stringify(j);
+    }
+
+    async function fundCampaign(){
+      const cid = document.getElementById('fundCid').value;
+      const amount = parseFloat(document.getElementById('fundAmount').value||'0');
+      const r = await fetch(BASE + '/wallet/fund-campaign', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+TOKEN}, body: JSON.stringify({campaign_id:cid, amount_eur:amount}) });
+      const j = await r.json();
+      document.getElementById('fundResult').textContent = JSON.stringify(j);
+      meBalance();
+    }
+
+    async function createCheckout(){
+      const amount = parseFloat(document.getElementById('topup').value||'0');
+      const r = await fetch(BASE + '/billing/create-checkout-session', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+TOKEN}, body: JSON.stringify({ amount_eur: amount }) });
+      const j = await r.json();
+      if (j.url) window.location = j.url; else alert(JSON.stringify(j));
+    }
+
+    async function createPublisher(){
+      const site_name = document.getElementById('pubName').value;
+      const site_url = document.getElementById('pubUrl').value;
+      const r = await fetch(BASE + '/publisher/register', { method:'POST', headers:{'Content-Type':'application/json','Authorization':'Bearer '+TOKEN}, body: JSON.stringify({site_name, site_url}) });
+      const j = await r.json();
+      if (j.embed) {
+        document.getElementById('pubEmbed').innerHTML = `<b>Embed</b>:<br><code>${j.embed.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</code>`;
+      } else {
+        document.getElementById('pubEmbed').textContent = JSON.stringify(j);
+      }
+    }
+
+    async function loadFeed(){
+      const loc = document.getElementById('feedLoc').value;
+      const ints = document.getElementById('feedInts').value;
+      const r = await fetch(BASE + `/feed?location=${encodeURIComponent(loc)}&interests=${encodeURIComponent(ints)}`);
+      const items = await r.json();
+      const wrap = document.getElementById('feed');
+      wrap.innerHTML = '';
+      items.forEach(it => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `<h3>${it.title}</h3>
+          <p>${it.description || ''}</p>
+          <p><small>Score: ${it.score.toFixed(2)} | Budget: € ${(it.budget_cents/100).toFixed(2)}</small></p>
+          ${it.asset_url ? `<img src="${it.asset_url}" alt="asset"/>` : ''}
+          <div>
+            <a href="/click?campaign_id=${it.id}" target="_blank"><button>Visita</button></a>
+            <button onclick="interact(${it.id}, 'view')">View</button>
+            <button onclick="interact(${it.id}, 'share')">Share</button>
+          </div>`;
+        wrap.appendChild(card);
+      });
+    }
+
+    async function interact(id, type){
+      const r = await fetch(BASE + '/interact', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({campaign_id:id, type})});
+      const j = await r.json();
+      alert(`${type} charged ${j.charged_cents} cents. Remaining: € ${(j.remaining_budget_cents/100).toFixed(2)}`);
+    }
+  </script>
+</body>
+</html>

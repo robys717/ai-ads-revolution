@@ -1,0 +1,236 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI Ads Revolution – Dashboard</title>
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    :root{--bg:#0b1220;--card:#111827;--muted:#9ca3af;--primary:#3b82f6;--ok:#10b981}
+    *{box-sizing:border-box}
+    body{margin:0;background:linear-gradient(180deg,#0b1220,#0b1220 60%,#0e172a);color:#f3f4f6;font-family:Inter,system-ui,Arial}
+    header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid #1f2937}
+    .brand{font-weight:800;letter-spacing:0.5px}
+    .wrap{max-width:1100px;margin:24px auto;padding:0 16px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+    .card{background:#111827;border:1px solid #1f2937;border-radius:16px;padding:16px}
+    input,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid #374151;background:#0b1220;color:#e5e7eb;margin:6px 0}
+    button{padding:10px 14px;border-radius:10px;border:0;background:var(--primary);color:#fff;cursor:pointer}
+    .muted{color:var(--muted)}
+    .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+    .pill{background:#0b1220;border:1px solid #374151;padding:6px 10px;border-radius:999px}
+    .table{width:100%;border-collapse:collapse}
+    .table th,.table td{border-bottom:1px solid #1f2937;padding:8px;text-align:left}
+    .ok{color:var(--ok)}
+    img{max-width:100%;border-radius:10px}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">AI Ads Revolution</div>
+    <div class="muted">Dashboard MVP</div>
+  </header>
+  <div id="app" class="wrap"></div>
+
+  <script type="text/babel">
+    const api = {
+      base: '',
+      async post(path, body, token){
+        const r = await fetch(this.base+path,{method:'POST',headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},body:JSON.stringify(body)});
+        return r.json();
+      },
+      async get(path, token){
+        const r = await fetch(this.base+path,{headers:{...(token?{Authorization:'Bearer '+token}:{})}});
+        return r.json();
+      }
+    };
+
+    function useLocalToken(){
+      const [token,setToken] = React.useState(localStorage.getItem('token')||'');
+      const save = t=>{ localStorage.setItem('token',t); setToken(t); };
+      const clear = ()=>{ localStorage.removeItem('token'); setToken(''); };
+      return {token,save,clear};
+    }
+
+    function AuthPanel({onAuth}){
+      const [name,setName] = React.useState('Roberto');
+      const [email,setEmail] = React.useState('roberto@example.com');
+      const [password,setPassword] = React.useState('demo12345');
+      return (
+        <div className="card">
+          <h2>Accesso</h2>
+          <div className="row">
+            <input value={name} onChange={e=>setName(e.target.value)} placeholder="Nome"/>
+            <input value={email} onChange={e=>setEmail(e.target.value)} placeholder="Email"/>
+            <input type="password" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Password"/>
+            <button onClick={async()=>{
+              const j = await api.post('/auth/register',{name,email,password});
+              if(j.token) onAuth(j.token); else alert(JSON.stringify(j));
+            }}>Registrati</button>
+            <button onClick={async()=>{
+              const j = await api.post('/auth/login',{email,password});
+              if(j.token) onAuth(j.token); else alert(JSON.stringify(j));
+            }}>Login</button>
+          </div>
+          <p className="muted">Riceverai un token valido 7 giorni.</p>
+        </div>
+      );
+    }
+
+    function CreateCampaign({token}){
+      const [title,setTitle] = React.useState('Promo Pizzeria Centro');
+      const [desc,setDesc] = React.useState('2x1 Margherita questa settimana.');
+      const [dest,setDest] = React.useState('https://esempio.it');
+      const [budget,setBudget] = React.useState('25');
+      const [cpc,setCpc] = React.useState('0.10');
+      const [cpv,setCpv] = React.useState('0.0005');
+      const [loc,setLoc] = React.useState('Piacenza,Fiorenzuola');
+      const [ints,setInts] = React.useState('pizza,ristorante,food');
+      const [createdId,setCreatedId] = React.useState('');
+      return (
+        <div className="card">
+          <h2>Crea Campagna</h2>
+          <div className="row">
+            <input value={title} onChange={e=>setTitle(e.target.value)} placeholder="Titolo"/>
+            <input value={dest} onChange={e=>setDest(e.target.value)} placeholder="Destination URL (https://...)"/>
+          </div>
+          <textarea rows="3" value={desc} onChange={e=>setDesc(e.target.value)} placeholder="Descrizione"/>
+          <div className="row">
+            <input value={budget} onChange={e=>setBudget(e.target.value)} placeholder="Budget €"/>
+            <input value={cpc} onChange={e=>setCpc(e.target.value)} placeholder="CPC €"/>
+            <input value={cpv} onChange={e=>setCpv(e.target.value)} placeholder="CPV €"/>
+          </div>
+          <div className="row">
+            <input value={loc} onChange={e=>setLoc(e.target.value)} placeholder="Località (comma)"/>
+            <input value={ints} onChange={e=>setInts(e.target.value)} placeholder="Interessi (comma)"/>
+          </div>
+          <div className="row">
+            <button onClick={async()=>{
+              const j = await api.post('/campaigns',{title,description:desc,destination_url:dest,budget_eur:+budget,cpc_eur:+cpc,cpv_eur:+cpv,location:loc,interests:ints},token);
+              if(j.id){ setCreatedId(String(j.id)); alert('Campagna creata #'+j.id); }
+              else alert(JSON.stringify(j));
+            }}>Crea</button>
+          </div>
+          <AssetUploader token={token} initialId={createdId}/>
+        </div>
+      );
+    }
+
+    function AssetUploader({token, initialId=''}){
+      const [cid,setCid] = React.useState(initialId);
+      const [file,setFile] = React.useState(null);
+      React.useEffect(()=>{ setCid(initialId); },[initialId]);
+      const upload = async()=>{
+        if(!cid||!file) return alert('Inserisci ID campagna e file');
+        const fd = new FormData(); fd.append('campaign_id', cid); fd.append('file', file);
+        const r = await fetch('/assets/upload',{method:'POST', headers:{Authorization:'Bearer '+token}, body: fd});
+        const j = await r.json();
+        if(j.url) alert('Asset caricato!'); else alert(JSON.stringify(j));
+      };
+      return (
+        <div className="card">
+          <h3>Upload Asset</h3>
+          <input value={cid} onChange={e=>setCid(e.target.value)} placeholder="ID Campagna"/>
+          <input type="file" onChange={e=>setFile(e.target.files[0])}/>
+          <button onClick={upload}>Carica</button>
+        </div>
+      );
+    }
+
+    function MyStats({token}){
+      const [ov,setOv] = React.useState({});
+      const [rows,setRows] = React.useState([]);
+      React.useEffect(()=>{(async()=>{
+        setOv(await api.get('/stats/overview',token));
+        setRows(await api.get('/stats/campaigns',token));
+      })()},[token]);
+      return (
+        <div className="card">
+          <h2>Statistiche</h2>
+          <div className="row">
+            <span className="pill">Budget totale: € {((ov.total_budget_cents||0)/100).toFixed(2)}</span>
+            <span className="pill">Spesa totale: € {((ov.total_spent_cents||0)/100).toFixed(2)}</span>
+          </div>
+          <table className="table" style={{marginTop:12}}>
+            <thead><tr><th>ID</th><th>Titolo</th><th>Views</th><th>Clicks</th><th>Shares</th><th>Speso</th><th>Rimanente</th></tr></thead>
+            <tbody>
+              {rows.map(r=> (
+                <tr key={r.id}>
+                  <td>#{r.id}</td>
+                  <td>{r.title}</td>
+                  <td>{r.views}</td>
+                  <td>{r.clicks}</td>
+                  <td>{r.shares}</td>
+                  <td>€ {(r.spent_cents/100).toFixed(2)}</td>
+                  <td className="ok">€ {(r.remaining_cents/100).toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+
+    function FeedTester(){
+      const [loc,setLoc] = React.useState('Piacenza');
+      const [ints,setInts] = React.useState('pizza,fitness');
+      const [items,setItems] = React.useState([]);
+      const load = async()=>{
+        const r = await api.get(`/feed?location=${encodeURIComponent(loc)}&interests=${encodeURIComponent(ints)}`);
+        setItems(r);
+      };
+      React.useEffect(()=>{ load(); },[]);
+      return (
+        <div className="card">
+          <h2>Feed Tester (pubblico)</h2>
+          <div className="row">
+            <input value={loc} onChange={e=>setLoc(e.target.value)} placeholder="Località"/>
+            <input value={ints} onChange={e=>setInts(e.target.value)} placeholder="Interessi"/>
+            <button onClick={load}>Ricarica</button>
+          </div>
+          <div className="grid" style={{marginTop:12}}>
+            {items.map(it => (
+              <div key={it.id} className="card">
+                <h3>{it.title}</h3>
+                <p className="muted">Score {it.score.toFixed(2)} • Budget € {(it.budget_cents/100).toFixed(2)}</p>
+                {it.asset_url && <img src={it.asset_url} alt="asset"/>}
+                <div className="row" style={{marginTop:8}}>
+                  <a href={`/click?campaign_id=${it.id}`} target="_blank"><button>Visita</button></a>
+                  <button onClick={async()=>{
+                    const j = await api.post('/interact',{campaign_id:it.id,type:'view'});
+                    alert(`view addebitato: ${j.charged_cents} cent. Rimasti: € ${(j.remaining_budget_cents/100).toFixed(2)}`);
+                    load();
+                  }}>View</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function App(){
+      const {token,save,clear} = useLocalToken();
+      return (
+        <div className="grid">
+          {!token ? <AuthPanel onAuth={save}/> : (
+            <>
+              <div className="card">
+                <h2>Benvenuto</h2>
+                <p className="muted">Token attivo. <button onClick={clear}>Logout</button> – Vai a <a href="/" style={{color:'#3b82f6'}}>client semplice</a></p>
+                <MyStats token={token}/>
+                <CreateCampaign token={token}/>
+              </div>
+            </>
+          )}
+          <FeedTester/>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('app')).render(<App/>);
+  </script>
+</body>
+</html>
