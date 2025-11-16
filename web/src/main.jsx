@@ -1,13 +1,19 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import { BrowserRouter } from 'react-router-dom'
-import App from './App'
-import './index.css'
+import React from "react";
+import ReactDOM from "react-dom/client";
+import App from "./App.jsx";
+import "./index.css";
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <BrowserRouter>
+const rootElement = document.getElementById("root");
+
+if (!rootElement) {
+  console.error("❌ Nessun elemento con id 'root' trovato in index.html");
+} else {
+  console.log("✅ main.jsx caricato correttamente (versione BASE)");
+  const root = ReactDOM.createRoot(rootElement);
+  root.render(
+    <React.StrictMode>
       <App />
-    </BrowserRouter>
-  </React.StrictMode>
-)
+    </React.StrictMode>
+  );
+}
+
