@@ -1,0 +1,23 @@
+[
+  {
+    "id": "fbc95c68-44de-40d1-ad29-5bd495e3c00e",
+    "companyName": "AI Ads Revolution Test",
+    "email": "prova@example.com",
+    "passwordHash": "$2b$10$giINdXiRux.t44NwbhyhueUNTGYfF9x6B.iD7faWltaH5Nc/CujsG",
+    "createdAt": "2025-11-17T00:07:32.024Z"
+  },
+  {
+    "id": "2ee82e90-8357-4530-bcd9-5511cd0386e8",
+    "companyName": "AI Ads Revolution Test",
+    "email": "prova@examplle.com",
+    "passwordHash": "$2b$10$iKoEJ86So4MRwWaA.cB88uyj2SZqrSHWn1EMaHkXITuHC1vnhz7gS",
+    "createdAt": "2025-11-17T00:08:32.597Z"
+  },
+  {
+    "id": "0cdb63c3-4807-4fde-8a7a-6e54a109c6aa",
+    "companyName": "uts",
+    "email": "test@aiads.com",
+    "passwordHash": "$2b$10$tFPhYXwJpjalu/KPnrnD/.tGlLNWZ7L6esQwU1GY8Cym4a3H40OpO",
+    "createdAt": "2025-11-18T17:07:34.454Z"
+  }
+]

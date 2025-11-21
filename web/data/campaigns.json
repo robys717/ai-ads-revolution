@@ -1,0 +1,30 @@
+[
+  {
+    "id": "CMP-001",
+    "name": "uts",
+    "status": "Attiva",
+    "dailyBudget": 10,
+    "createdAt": "2025-11-17T20:08:19.541Z"
+  },
+  {
+    "id": "CMP-002",
+    "name": "uts2",
+    "status": "Attiva",
+    "dailyBudget": 50,
+    "createdAt": "2025-11-17T20:08:39.693Z"
+  },
+  {
+    "id": "CMP-003",
+    "name": "uts3",
+    "status": "Attiva",
+    "dailyBudget": 25,
+    "createdAt": "2025-11-17T20:08:55.448Z"
+  },
+  {
+    "id": "CMP-004",
+    "name": "uts4",
+    "status": "Attiva",
+    "dailyBudget": 100,
+    "createdAt": "2025-11-17T20:32:05.579Z"
+  }
+]

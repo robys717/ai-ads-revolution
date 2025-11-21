@@ -1,0 +1,197 @@
+"use client";
+
+import { useEffect, useState, FormEvent } from "react";
+
+interface Campaign {
+  id: string;
+  name: string;
+  status: string;
+  dailyBudget: number;
+  createdAt: string;
+}
+
+function getStats(index: number, dailyBudget: number) {
+  const impressions = 1000 + index * 500 + Math.round(dailyBudget * 10);
+  const ctr = 1.2 + index * 0.4; // in percentuale
+  const clicks = Math.round(impressions * (ctr / 100));
+  const conversions = Math.round(clicks * 0.05); // 5% dei click
+  return { impressions, ctr, clicks, conversions };
+}
+
+export default function CampaignsPage() {
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const [name, setName] = useState("");
+  const [dailyBudget, setDailyBudget] = useState("");
+
+  async function loadCampaigns() {
+    try {
+      const res = await fetch("/api/campaigns");
+      const data = await res.json();
+      setCampaigns(data);
+    } catch (err) {
+      console.error("Errore nel caricamento campagne", err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    loadCampaigns();
+  }, []);
+
+  async function handleCreate(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    try {
+      const res = await fetch("/api/campaigns", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          dailyBudget: Number(dailyBudget),
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        alert(data.error || "Errore nella creazione campagna");
+        return;
+      }
+
+      setCampaigns((prev) => [...prev, data]);
+      setName("");
+      setDailyBudget("");
+      alert("Campagna creata!");
+    } catch (err) {
+      alert("Errore di rete. Riprova.");
+    }
+  }
+
+  return (
+    <div className="min-h-screen bg-[#0b0f19] text-slate-100 px-4 py-8">
+      <div className="max-w-5xl mx-auto">
+        <h1 className="text-2xl font-bold mb-2">Campagne</h1>
+        <p className="text-sm text-slate-400 mb-6">
+          Crea e gestisci le tue campagne pubblicitarie. Per ora i dati 
+sono
+          salvati localmente, ma la struttura è già da piattaforma reale.
+        </p>
+
+        {/* Form creazione campagna */}
+        <div className="bg-[#111827] border border-slate-800 rounded-2xl 
+p-4 mb-6">
+          <h2 className="text-sm font-semibold mb-3">Crea nuova 
+campagna</h2>
+          <form
+            onSubmit={handleCreate}
+            className="flex flex-col sm:flex-row gap-3 text-sm"
+          >
+            <input
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              placeholder="Nome campagna (es. NetroxAI lancio)"
+              className="flex-1 rounded-lg border border-slate-700 
+bg-slate-900 px-3 py-2 outline-none focus:border-emerald-400"
+            />
+
+            <input
+              value={dailyBudget}
+              onChange={(e) => setDailyBudget(e.target.value)}
+              required
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Budget giornaliero (€)"
+              className="w-40 rounded-lg border border-slate-700 
+bg-slate-900 px-3 py-2 outline-none focus:border-emerald-400"
+            />
+
+            <button
+              type="submit"
+              className="rounded-full bg-emerald-500 text-slate-900 
+font-semibold px-4 py-2"
+            >
+              Crea
+            </button>
+          </form>
+        </div>
+
+        {/* Tabella campagne */}
+        <div className="overflow-x-auto rounded-2xl border 
+border-slate-800 bg-[#0f172a]">
+          {loading ? (
+            <div className="p-4 text-sm 
+text-slate-400">Caricamento...</div>
+          ) : campaigns.length === 0 ? (
+            <div className="p-4 text-sm text-slate-400">
+              Nessuna campagna ancora. Crea la prima con il form sopra.
+            </div>
+          ) : (
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr className="text-left text-slate-400 border-b 
+border-slate-800">
+                  <th className="px-4 py-3">ID</th>
+                  <th className="px-4 py-3">Nome</th>
+                  <th className="px-4 py-3">Stato</th>
+                  <th className="px-4 py-3">Budget giornaliero</th>
+                  <th className="px-4 py-3">Impression</th>
+                  <th className="px-4 py-3">CTR</th>
+                  <th className="px-4 py-3">Conversioni</th>
+                  <th className="px-4 py-3">Creata il</th>
+                </tr>
+              </thead>
+              <tbody>
+                {campaigns.map((c, index) => {
+                  const stats = getStats(index, c.dailyBudget || 0);
+                  return (
+                    <tr
+                      key={c.id}
+                      className="border-t border-slate-800 
+hover:bg-slate-800/40"
+                    >
+                      <td className="px-4 py-3 text-slate-300">{c.id}</td>
+                      <td className="px-4 py-3">{c.name}</td>
+                      <td className="px-4 py-3">
+                        <span className="text-xs px-2 py-1 rounded-full 
+bg-slate-900 border border-slate-700">
+                          {c.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3">
+                        € {c.dailyBudget.toFixed(2)}
+                      </td>
+                      <td className="px-4 py-3">
+                        {stats.impressions.toLocaleString("it-IT")}
+                      </td>
+                      <td className="px-4 py-3">
+                        {stats.ctr.toFixed(1)}%
+                      </td>
+                      <td className="px-4 py-3">{stats.conversions}</td>
+                      <td className="px-4 py-3 text-xs text-slate-400">
+                        {new Date(c.createdAt).toLocaleString()}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        <p className="text-[11px] text-slate-500 mt-4">
+          I valori di impression, CTR e conversioni sono simulati in base 
+al
+          budget e alla posizione della campagna. In futuro qui useremo i 
+dati
+          reali raccolti dalla piattaforma.
+        </p>
+      </div>
+    </div>
+  );
+}
+
